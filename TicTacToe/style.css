@@ -1,0 +1,46 @@
+body {
+    font-family: 'Times New Roman', Times, serif;
+}
+section {
+    text-align: center;
+}
+
+.title {
+    font-size: 100px;
+    color: rgb(95, 123, 160);
+    margin: 15px;
+}
+
+.cell {
+    font-family: "Permanent Marker", cursive;
+    width: 100px;
+    height: 100px;
+    border: 2px solid rgb(255, 244, 194);
+    box-shadow: 2px 2px 2px 2px rgb(215, 206, 166);
+    background-color: cadetblue;
+    cursor: pointer;
+    line-height: 100px;
+    font-size: 50px;
+    color: rgb(255, 255, 255);
+}
+
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    width: 306px;
+    margin: auto;
+}
+
+.game--status {
+    font-size: 50px;
+    color: rgb(95, 123, 160);
+    margin: 20px auto;
+}
+
+.restart {
+    width: 200px;
+    height: 50px;
+    font-size: 25px;
+    background-color: rgb(95, 123, 160);
+    color: rgb(255, 244, 193);
+}
