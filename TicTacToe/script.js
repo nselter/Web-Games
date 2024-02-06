@@ -1,7 +1,7 @@
 const statusDisplay = document.querySelector(".game-status");
 
 let currPlayer = 'X';
-let player1 = Math.random()>=0.5 ? 'X' : 'O';
+let player1;
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameStatus = true;
 let gameMode;
@@ -29,7 +29,7 @@ function handleBoardChange(cell, cellIndex) {
 function changeTurn() {
     currPlayer = currPlayer == 'X' ? 'O' : 'X';
     if (gameMode==='random' && currPlayer!=player1) {
-        return;
+        randomMove();
     } else if (gameMode==='minmax' && currPlayer!=player1) {
         return;
     } else {
@@ -63,6 +63,17 @@ function checkWin() {
     changeTurn();
 };
 
+function randomMove() {
+    let openCells = [];
+    for (let i=0;i<9;i++) {
+        if (gameBoard[i]==='') openCells.push(i);
+    }
+
+    let random = Math.floor(Math.random()*openCells.length);
+    handleBoardChange(document.querySelector(`[cell-index="${openCells[random]}"]`), openCells[random]);
+    checkWin();
+}
+
 function handleClickedCell(clickedCellEvent) {
     const cell = clickedCellEvent.target;
     const cellIndex = parseInt(cell.getAttribute("cell-index"));
@@ -84,29 +95,36 @@ function restartGame() {
     statusDisplay.innerHTML = getPlayerString();
 }
 
-function handleTwoPlayer() {
-    document.querySelector(".game-holder").style.visibility='visible';
-    gameMode = 'two-player';
+function choosePlayerChar() {
+    player1 = Math.random()>=0.5 ? 'X' : 'O';
+    if (player1==='O') {
+        switch (gameMode) {
+            case 'minmax':
+                statusDisplay.innerHTML = `You are ${player1}`;
+                minmaxMove();
+                break;
+            case 'random':
+                statusDisplay.innerHTML = `You are ${player1}`;
+                randomMove();
+                break;
+        }
+    }
 }
 
-function handleRandom() {
+function handleGameModes(modeEvent) {
+    restartGame()
     document.querySelector(".game-holder").style.visibility='visible';
-    gameMode = 'random';
-}
-
-function handleMinMax() {
-    document.querySelector(".game-holder").style.visibility='visible';
-    gameMode = 'minmax';
+    gameMode = modeEvent.target.getAttribute("mode");
+    choosePlayerChar();
+    
 }
 
 function init() {
     document.querySelector(".game-holder").style.visibility='hidden';
     statusDisplay.innerHTML = getPlayerString();
     document.querySelectorAll(".cell").forEach(cell => cell.addEventListener('click', handleClickedCell));
+    document.querySelectorAll(".game-mode").forEach(cell => cell.addEventListener('click', handleGameModes))
     document.querySelector(".restart").addEventListener('click', restartGame);
-    document.querySelector(".two-player").addEventListener('click', handleTwoPlayer);
-    document.querySelector(".random").addEventListener('click', handleRandom);
-    document.querySelector(".minmax").addEventListener('click', handleMinMax);
 }
 
 init();
