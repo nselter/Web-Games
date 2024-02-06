@@ -9,19 +9,26 @@
 <body>
     <section>
         <h1 class="title">Tic-Tac-Toe</h1>
-        <div class="container">
-            <div cell-index="0" class="cell"></div>
-            <div cell-index="1" class="cell"></div>
-            <div cell-index="2" class="cell"></div>
-            <div cell-index="3" class="cell"></div>
-            <div cell-index="4" class="cell"></div>
-            <div cell-index="5" class="cell"></div>
-            <div cell-index="6" class="cell"></div>
-            <div cell-index="7" class="cell"></div>
-            <div cell-index="8" class="cell"></div>
+        <div class="game-modes">
+            <button class="two-player">2-Player</button>
+            <button class="random">Easy Computer</button>
+            <button class="minmax">Hard Computer</button>
         </div>
-        <h2 class="game-status"></h2>
-        <button class="restart">Restart Game</button>
+        <div class="game-holder">
+            <div class="container">
+                <div cell-index="0" class="cell"></div>
+                <div cell-index="1" class="cell"></div>
+                <div cell-index="2" class="cell"></div>
+                <div cell-index="3" class="cell"></div>
+                <div cell-index="4" class="cell"></div>
+                <div cell-index="5" class="cell"></div>
+                <div cell-index="6" class="cell"></div>
+                <div cell-index="7" class="cell"></div>
+                <div cell-index="8" class="cell"></div>
+            </div>
+            <h2 class="game-status"></h2>
+            <button class="restart">Restart Game</button>
+        </div>
     </section>
     <script src="script.js"></script>
 </body>

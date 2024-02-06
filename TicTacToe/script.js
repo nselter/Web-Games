@@ -1,8 +1,10 @@
 const statusDisplay = document.querySelector(".game-status");
 
 let currPlayer = 'X';
+let player1 = Math.random()>=0.5 ? 'X' : 'O';
 let gameBoard = ['', '', '', '', '', '', '', '', ''];
 let gameStatus = true;
+let gameMode;
 
 const getPlayerString = () => `It's ${currPlayer}'s turn`;
 const getWinningString = () => `Player ${currPlayer} has Won!`;
@@ -26,7 +28,13 @@ function handleBoardChange(cell, cellIndex) {
 
 function changeTurn() {
     currPlayer = currPlayer == 'X' ? 'O' : 'X';
-    statusDisplay.innerHTML = getPlayerString();
+    if (gameMode==='random' && currPlayer!=player1) {
+        return;
+    } else if (gameMode==='minmax' && currPlayer!=player1) {
+        return;
+    } else {
+        statusDisplay.innerHTML = getPlayerString();
+    }
 }
 
 function checkWin() {
@@ -76,10 +84,29 @@ function restartGame() {
     statusDisplay.innerHTML = getPlayerString();
 }
 
+function handleTwoPlayer() {
+    document.querySelector(".game-holder").style.visibility='visible';
+    gameMode = 'two-player';
+}
+
+function handleRandom() {
+    document.querySelector(".game-holder").style.visibility='visible';
+    gameMode = 'random';
+}
+
+function handleMinMax() {
+    document.querySelector(".game-holder").style.visibility='visible';
+    gameMode = 'minmax';
+}
+
 function init() {
+    document.querySelector(".game-holder").style.visibility='hidden';
     statusDisplay.innerHTML = getPlayerString();
     document.querySelectorAll(".cell").forEach(cell => cell.addEventListener('click', handleClickedCell));
     document.querySelector(".restart").addEventListener('click', restartGame);
+    document.querySelector(".two-player").addEventListener('click', handleTwoPlayer);
+    document.querySelector(".random").addEventListener('click', handleRandom);
+    document.querySelector(".minmax").addEventListener('click', handleMinMax);
 }
 
 init();
