@@ -31,27 +31,29 @@ function changeTurn() {
     if (gameMode==='random' && currPlayer!=player1) {
         randomMove();
     } else if (gameMode==='minmax' && currPlayer!=player1) {
-        return;
+        minmaxMove();
     } else {
         statusDisplay.innerHTML = getPlayerString();
     }
 }
 
-function checkWin() {
-    let gameWin = false;
+function checkWin(board, player) {
     for (i in winConditions) {
         // If currPlayer is a winnner
-        if (gameBoard[winConditions[i][0]] == currPlayer && gameBoard[winConditions[i][1]] == currPlayer && gameBoard[winConditions[i][2]] == currPlayer) {
-            gameWin = true;
+        if (board[winConditions[i][0]] == player && board[winConditions[i][1]] == player && board[winConditions[i][2]] == player) {
+            return true;
         }
     }
+    return false;
+}
 
+function submitTurn() {
+    const gameWin = checkWin(gameBoard, currPlayer);
     if (gameWin) {
         statusDisplay.innerHTML = getWinningString();
         gameStatus = false;
         return;
     }
-
 
     let gameDraw = !gameBoard.includes('');
     if (gameDraw) {
@@ -64,14 +66,77 @@ function checkWin() {
 };
 
 function randomMove() {
+    const cells = openCells(gameBoard);
+
+    let random = Math.floor(Math.random()*cells.length);
+    handleBoardChange(document.querySelector(`[cell-index="${cells[random]}"]`), cells[random]);
+    submitTurn();
+}
+
+function openCells(board) {
     let openCells = [];
     for (let i=0;i<9;i++) {
-        if (gameBoard[i]==='') openCells.push(i);
+        if (board[i]=='') openCells.push(i);
+    }
+    return openCells
+}
+
+function minmaxMove() {
+    let moves = [];
+    let moveVal = -Infinity;
+    let board = gameBoard.slice(); 
+    for (let newMove of openCells(board)) {
+        board[newMove] = currPlayer;
+
+        const newMoveVal = minmax(board, 0, false);
+
+        board[newMove] = '';
+
+        if (newMoveVal > moveVal) {
+            moveVal = newMoveVal;
+            moves = [];
+            moves.push(newMove);
+        } else if (newMoveVal === moveVal) {
+            moves.push(newMove);
+        }
     }
 
-    let random = Math.floor(Math.random()*openCells.length);
-    handleBoardChange(document.querySelector(`[cell-index="${openCells[random]}"]`), openCells[random]);
-    checkWin();
+    const random = Math.floor(Math.random()*moves.length);
+    handleBoardChange(document.querySelector(`[cell-index="${moves[random]}"]`), moves[random]);
+    submitTurn();
+}
+
+function minmax(board, depth, isCurrPlayerTurn) {
+    if (checkWin(board, isCurrPlayerTurn ? currPlayer : currPlayer==='X' ? 'O' : 'X')) {
+        return isCurrPlayerTurn ? 10-depth : -10;
+    } else if (!board.includes('')) {
+        return 0;
+    }
+
+    
+    if (isCurrPlayerTurn) { 
+        // If Current Player's Move, find the best move for them
+        let bestMoveVal = -Infinity;
+        for (let move of openCells(board)) {
+            board[move] = currPlayer;
+
+            bestMoveVal = Math.max(bestMoveVal, minmax(board, depth+1, false));
+
+            board[move] = '';
+        }
+        return bestMoveVal;
+    } else {
+        // If not the current player's move, find worst case sinario
+        let worstMoveVal = Infinity;
+        for (let move of openCells(board)) {
+            board[move] = currPlayer==='X' ? 'O' : 'X';
+
+            worstMoveVal = Math.min(worstMoveVal, minmax(board, depth+1, true));
+
+            board[move] = '';
+        }
+        return worstMoveVal;
+    }
 }
 
 function handleClickedCell(clickedCellEvent) {
@@ -83,7 +148,7 @@ function handleClickedCell(clickedCellEvent) {
     }
 
     handleBoardChange(cell, cellIndex);
-    checkWin();
+    submitTurn();
 }
 
 function restartGame() {
@@ -93,6 +158,7 @@ function restartGame() {
     statusDisplay.innerHTML = '';
     document.querySelectorAll(".cell").forEach(cell => cell.innerHTML = '');
     statusDisplay.innerHTML = getPlayerString();
+    choosePlayerChar();
 }
 
 function choosePlayerChar() {
@@ -115,8 +181,6 @@ function handleGameModes(modeEvent) {
     restartGame()
     document.querySelector(".game-holder").style.visibility='visible';
     gameMode = modeEvent.target.getAttribute("mode");
-    choosePlayerChar();
-    
 }
 
 function init() {
